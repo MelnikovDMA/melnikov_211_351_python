@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-1"></div>
+<div class="col-md-10">
+    <div class="post-body">
+        <h1 class="card-title pb-2 pt-5">{{ post.title }}</h1>
+        <div class="card-info p-0 pb-4 bg-white">
+            Опубликовано {{ post.date.strftime('%d.%m.%Y') }}. Автор: {{ post.author }}
+        </div>
+        <div class="container pb-5 px-5">
+            <img class="card-img-top px-5" src="{{ url_for('static', filename='images/' + post.image_id) }}" alt="Card image cap">
+        </div>
+        <p class="card-text">
+            {{ post.text | truncate(4000) }}
+        </p>
+    </div>
+    <div class="comments mt-3">
+        <form class="border" action="">
+            <legend class="px-4 py-2 border-bottom bg-light">Оставьте комментарий</legend>
+            <div class="container pt-3">
+                <textarea class="form-control" name="com" id="com" rows="3"></textarea>
+                <div class="py-3">
+                    <button type="button" class="btn btn-primary">Отправить</button>
+                </div>
+            </div>   
+        </form>
+
+        {% for comment in post.comments %}  
+        <div class="d-flex pt-4">
+            <div class="flex-shrink-0">
+                <img class="rounded-circle miniavatar" src="{{ url_for('static', filename='images/miniavatar.png') }}" alt="CommentAuthor">
+            </div>
+            <div class="flex-grow-1 ms-3">
+                <h5>{{ comment.author }}</h5>
+                <p>{{ comment.text }}</p>
+                {% for ander_comment in comment['replies'] %}
+                <div class="d-flex mt-4">
+                    <div class="flex-shrink-0">
+                        <img class="rounded-circle miniavatar" src="{{ url_for('static', filename='images/miniavatar.png') }}" alt="CommentAuthor">
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5>{{ ander_comment.author }}</h5>
+                        <p>{{ ander_comment.text }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="col-md-1"></div>
+</div>
+{% endblock %}
