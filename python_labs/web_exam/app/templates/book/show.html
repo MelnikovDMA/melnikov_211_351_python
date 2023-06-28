@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-3 text-center text-uppercase font-weight-bold">Просмотр книги</h1>
+    <div class="book-card container">
+        <div class="row">
+            <div class="book-image col-6 container"
+            style="background-image: url({{ book.get_img() }});">
+            </div>
+            <div class="book-details col-6">
+                <div class="book-name">
+                    {{ current_book.name }}
+                </div>
+                <div class="book-author">
+                    {{ current_book.author }}
+                </div>
+                <div class="book-year">
+                    {{ current_book.year }}
+                </div>
+                <div class="book-rating">
+                    Рейтинг: {{ func.avg(reviews.querry.filter(reviews.book_id == current_book.id).rating.all()) }}
+                </div>
+                <div class="book-publisher">
+                    {{ current_book.publisher }}
+                </div>
+                <div class="book-description">
+                    {{ current_book.description }}
+                </div>
+                <div class="book-genres">
+                    <ul>
+                    {% for genre in genres %}
+                        {% if genre.books_id == current_book.id %}
+                        <li>{{ genre.name }}</li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                </div>
+                <div class="book-reviews">
+                    Количество рецензий: <span>{{ book.reviews|length }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,10 +1,25 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+import functools
 from models import User
 from app import db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+def check_rights(action):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            user = load_user(kwargs.get('user_id'))
+            if current_user.is_anonymous:
+                flash('Авторизуйтесь для просмотра данной страницы!', 'danger')
+                return redirect(url_for('auth.login'))
+            if not current_user.can(action):
+                flash('У вас недостаточно прав для доступа к данной странице.', 'danger')
+                return redirect(url_for('index'))
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 def init_login_manager(app):
     login_manager = LoginManager()

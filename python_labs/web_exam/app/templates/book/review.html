@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-3 text-center">Написание рецензии по книге: "{{ book.name }}"</h1>
+    <form method="POST">
+        <div class="m">
+            <label for="review">Напишите отзыв</label>
+            <textarea class="form-control" name="review" id="review" cols="30" rows="5" placeholder="Введите текст"></textarea>
+        </div>
+        <div class="mb-3 form-group">
+            <label for="exampleFormControlSelect1">Ваша оценка</label>
+            <select class="form-control" id="exampleFormControlSelect1" name="grade">
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1</option>
+            </select>
+        </div>
+        <div class="mb-3 text-center">
+            <input type="submit" class="btn btn-primary" value="Сохранить рецензию">
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,45 +1,100 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Список книг</h1>
+{% if current_user.is_authenticated %}
+    Ваш логин: {{ current_user.login }}.
+{% else %}
+    Вы не авторизированный пользователь.
+{% endif %}
+
+<h1 class="pt-3">Список книг</h1>
 <div class="container">
     <div class="book-list col-md-12 col-6 p-3">
-    {% for current_book in Book %}
-        <div class="book-card row">
-            <div class="book-image col-6">
-
+    {% for current_book in books %}
+        <div class="book-card">
+            <div class="row">
+                <!-- <div class="book-image col-6"
+                style="background-image: url({{ book.get_img() }});">
+                </div> -->
+                <div class="book-details col-6">
+                    <div class="book-name">
+                        {{ current_book.name }}
+                    </div>
+                    <div class="book-author">
+                        {{ current_book.author }}
+                    </div>
+                    <div class="book-year">
+                        {{ current_book.year }}
+                    </div>
+                    <div class="book-rating">
+                       5 <!-- Рейтинг: {{ func.avg(reviews.querry.filter(reviews.book_id == current_book.id).rating.all()) }} -->
+                    </div>
+                    <div class="book-publisher">
+                        {{ current_book.publisher }}
+                    </div>
+                    <div class="book-description">
+                        {{ current_book.description }}
+                    </div>
+                    <div class="book-genres">
+                        <ul>
+                        {% for genre in book_genre %}
+                            {% if genre.books_id == current_book.id %}
+                            <li>{{ genre.name }}</li>
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="book-reviews">
+                        Количество рецензий: <span>{{ book.reviews|length }}</span>
+                    </div>
+                </div>
             </div>
-            <div class="book-details col-6">
-                <div class="book-name">
-                    {{ current_book.name }}
+            <div class="btn-panel">
+                <div class="details-btn">
+                    <a class="btn btn-primary text-light" href="{{ url_for('book.show', book_id=book.id) }}">Обзор</a>
                 </div>
-                <div class="book-author">
-                    {{ current_book.author }}
+                {% if current_user.is_authenticated and current_user.role_id == 2 %}
+                <div class="edit-btn">
+                    <a class="btn btn-primary text-light" href="{{ url_for('book.edit', book_id=book.id) }}">Редактировать</a>
                 </div>
-                <div class="book-year">
-                    {{ current_book.year }}
-                </div>
-                <div class="book-rating">
-                    
-                </div>
-                <div class="book-publisher">
-                    {{ current_book.publisher }}
-                </div>
-                <div class="book-description">
-
-                </div>
-                <div class="book-genres">
-
-                </div>
-                <div class="book-reviews">
-
-                </div>
+                    {% if current_user.is_authenticated and current_user.role_id == 3 %}
+                    <div class="delete-btn">
+                        <button type="button" class="btn btn-danger" data-url="{{ url_for('book.delete, book_id=book.id') }}" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</button>
+                    </div>
+                    {% endif %}
+                {% endif %}
             </div>
-        </div>
-        <div class="details-btn">
-            <a class="btn btn-primary text-light" href="">Просмотр</a>
         </div>
     {% endfor %}
     </div>
+    {% if current_user.is_authenticated and current_user.role_id == 3 %}
+    <div class="create-btn">
+        <a class="btn btn-primary text-light" href="{{ url_for('book.create') }}">Добавить книгу</a>
+    </div>
+    {% endif %}
 </div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Удаление Книги</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите удалить Книгу - 
+                <span class="delete-book-name"></span>?
+                <form action="" class="d-none" method="POST">
+                    <input type="submit" id="submit-delete">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <label for="submit-delete" class="btn btn-danger mb-0">Удалить</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='delete.js')}}"></script>
 {% endblock %}

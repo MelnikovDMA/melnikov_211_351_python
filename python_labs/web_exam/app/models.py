@@ -15,10 +15,20 @@ class Book(db.Model):
     publisher = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(100), nullable=False)
     pages = db.Column(db.Integer, nullable=False)
-    cover_id = db.Column(db.Integer, db.ForeignKey("covers.id"), nullable=False)
+    cover_id = db.Column(db.Integer, db.ForeignKey("covers.id", ondelete='CASCADE'), nullable=False)
 
     def __repr__(self):
         return '<Book %r>' % self.name
+    
+    def get_img(self):
+        img = Cover.query.filter_by(id=self.cover_id).first()
+        if img:
+            img = img.url
+        return img
+    
+    reviews = db.relationship('Review')
+    bookstogenre = db.relationship('BookToGenre')
+    cover = db.relationship('Cover')
     
 class Cover(db.Model):
     __tablename__ = 'covers'
@@ -45,7 +55,7 @@ class Review(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
-    user_if = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     rating = db.Column(db.Integer, nullable=False)  
     text = db.Column(db.Text(), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=sa.sql.func.now())
@@ -82,3 +92,22 @@ class Role(db.Model):
 
     def __repr__(self):
         return '<Role %r>' % self.name
+    
+class Genre(db.Model):
+    __tablename__ = 'genres'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+
+    def __repr__(self):
+        return '<Genre %r>' % self.name
+    
+class BookToGenre(db.Model):
+    __tablename__ = 'book_to_genres'
+
+    id = db.Column(db.Integer, primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
+    genre_id = db.Column(db.Integer, db.ForeignKey("genres.id"), nullable=False)
+
+    book = db.relationship('Book')
+    genre = db.relationship('Genre')
