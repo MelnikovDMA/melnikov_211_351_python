@@ -26,8 +26,22 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{{ url_for('index') }}">Список книг</a>
+                        <a class="nav-link" aria-current="page" href="{{ url_for('index') }}">Главная страница</a>
                     </li>
+                    {% if current_user.role_id == 3 %}
+                    <li>
+                        <a class="nav-link" aria-current="page" href="">Статистика</a>
+                    </li>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                    <li>
+                        <a class="btn btn-outline-light" href="{{ url_for('auth.logout') }}">Выйти</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light" href="{{ url_for('auth.login') }}">Войти</a>
+                    </li>
+                    {% endif %}
                     </ul>
                 </div>
                 </div>
@@ -35,9 +49,20 @@
         </header>
 
         <main class="my-3">
+            <div class="container alerts-area">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% for category, msg in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show m-0 rounded-0" role="alert">
+                            {{ msg }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+
             <div class="container">
                 {% block content %}
-                    <h1>Содержимое по умолчанию</h1>
+                    <h1>Разойдись свинопасы или Господин Ведьмак, вам таких ***юлей отвесит, вовек не забудете!</h1>
                 {% endblock %}
             </div>
         </main>

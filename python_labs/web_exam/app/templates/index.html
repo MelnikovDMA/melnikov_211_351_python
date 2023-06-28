@@ -1,5 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<p>Hello world</p>
+<h1>Список книг</h1>
+<div class="container">
+    <div class="book-list col-md-12 col-6 p-3">
+    {% for current_book in Book %}
+        <div class="book-card row">
+            <div class="book-image col-6">
+
+            </div>
+            <div class="book-details col-6">
+                <div class="book-name">
+                    {{ current_book.name }}
+                </div>
+                <div class="book-author">
+                    {{ current_book.author }}
+                </div>
+                <div class="book-year">
+                    {{ current_book.year }}
+                </div>
+                <div class="book-rating">
+                    
+                </div>
+                <div class="book-publisher">
+                    {{ current_book.publisher }}
+                </div>
+                <div class="book-description">
+
+                </div>
+                <div class="book-genres">
+
+                </div>
+                <div class="book-reviews">
+
+                </div>
+            </div>
+        </div>
+        <div class="details-btn">
+            <a class="btn btn-primary text-light" href="">Просмотр</a>
+        </div>
+    {% endfor %}
+    </div>
+</div>
 {% endblock %}
