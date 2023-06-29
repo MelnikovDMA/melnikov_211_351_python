@@ -50,27 +50,26 @@ bin_ip = "00001010000000010000000111000011"
 
 """
 
-ip_template = """
-Network:
-{0:<8}  {1:<8}  {2:<8}  {3:<8}
-{4:}  {5:}  {6:}  {7:}
-"""
-mask_template = """
-Mask:
-/{0}
-{1:<8}  {2:<8}  {3:<8}  {4:<8}
-{1:08b}  {2:08b} {3:08b}  {4:08b}
-"""
+ip_and_mask = input("IP адрес вида ххх.ххх.ххх.ххх/уу ")
+ip = ip_and_mask.split("/")[0]
+mask = ip_and_mask.split("/")[1]
+ip_array = ip.split(".")
+bit_mask = "1" * int(mask) + "0" * (32 - int(mask))
+octet_1 = int(bit_mask[0:8],2)
+octet_2 = int(bit_mask[8:16],2)
+octet_3 = int(bit_mask[16:24],2)
+octet_4 = int(bit_mask[24:32],2)
+bit_ip = "{:08b}{:08b}{:08b}{:08b}".format(int(ip_array[0]), int(ip_array[1]), int(ip_array[2]), int(ip_array[3]))
+network_bit_ip = bit_ip[0:int(mask)] + "0" * (32 - int(mask))
+ip_octet_1 = int(network_bit_ip[0:8], 2)
+ip_octet_2 = int(network_bit_ip[8:16], 2)
+ip_octet_3 = int(network_bit_ip[16:24], 2)
+ip_octet_4 = int(network_bit_ip[24:32], 2)
 
-ip_address = input('Введите IP-сети (Пример: 10.1.1.0/24): ')
-ip_address = ip_address.split('/')
-network = ip_address[0].split('.')
-
-mask = "1" * int(ip_address[1]) + "0" * (32 - int(ip_address[1]))
-
-mod_address = bin(int(network[0])).split('b')[1].rjust(8, '0') + bin(int(network[1])).split('b')[1].rjust(8, '0') + bin(int(network[2])).split('b')[1].rjust(8, '0') + bin(int(network[3])).split('b')[1].rjust(8, '0')
-nuls = 32 - int(ip_address[1])
-mod_address = mod_address[:int(ip_address[1]) - 1] + nuls * "0" 
-
-print(ip_template.format(int(network[0]), int(network[1]), int(network[2]), int(network[3]), mod_address[0:8], mod_address[8:16], mod_address[16:24], mod_address[24:32]))
-print(mask_template.format(ip_address[1], int(mask[0:8], 2), int(mask[8:16], 2), int(mask[16:24], 2), int(mask[24:32], 2)))
+print("Network:")
+print("{:<8}  {:<8}  {:<8}  {:<8}".format(ip_octet_1, ip_octet_2, ip_octet_3, ip_octet_4))
+print("{:08b}  {:08b}  {:08b}  {:08b}".format(ip_octet_1, ip_octet_2, ip_octet_3, ip_octet_4))
+print("\nMask:")
+print("/" + mask)
+print("{:<8}  {:<8}  {:<8}  {:<8}".format(octet_1, octet_2, octet_3, octet_4))
+print("{:08b}  {:08b}  {:08b}  {:08b}".format(octet_1, octet_2, octet_3, octet_4))
