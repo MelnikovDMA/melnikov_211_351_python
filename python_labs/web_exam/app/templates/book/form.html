@@ -1,51 +1,53 @@
-{% macro book_form(url, genres, book={}, list_of_genres=[]) %}
-<form action="{{ url }}" method="POST" enctype="multipart/form-data">
+{% macro book_form(current_book=None, is_edit=False) %}
+<link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+<script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+
+<form action="{% if is_edit %} {{ url_for('book.edit', book_id=current_book.id) }} {% else %} {{ url_for('book.create') }} {% endif %}" method="POST" enctype="multipart/form-data">
     <div class="row">
         {% if request.endpoint in ['book.create'] %}
-        <div class="col-md-12">
-            <div class="mb-2">
-                <label for="cover_img">Обложка</label>
-                <input class="form-control" type="file" name="cover_img" id="cover_img">
-            </div>
-            <div class="mb-2 background-preview p-2 rounded d-flex align-items-center justify-content-center">
-                <img src="#" class="img-fluid d-none" alt="">
-                <label for="cover_img" class="btn btn-dark">Выбрать обложку</label>
-            </div>
+        <div class="mb-2">
+            <label for="cover_img">Обложка</label>
+            <input class="form-control" type="file" name="cover_img" id="cover_img">
         </div>
         {% endif %}
         <div class="col-md-12">
-            <div class="mb-2">
-                <label for="title">Название книги</label>
-                <input class="form-control" type="text" id="bookName" name="bookName" value="{{ book.name or '' }}">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label for="bookName">Название книги</label>
+                    <input class="form-control" type="text" id="bookName" name="bookName" value="{{ current_book.name or '' }}">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label for="author">Автор книги</label>
+                    <input class="form-control" type="text" id="authorName" name="authorName" value="{{ current_book.author or '' }}">
+                </div>
             </div>
             <div class="mb-2">
                 <label for="genre">Жанры</label>
                 <select multiple class="form-select" id="genre" name="genre_id">
                     <option value="0">Не выбрано</option>
-                    {% for genre in genres %}
-                    <option value="{{ genre.id }}" {% if genre.id in list_of_genres %}selected{% endif %}>{{ genre.name }}</option>
+                    {% for item in genres %}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="mb-2">
-                <label for="author">Автор книги</label>
-                <input class="form-control" type="text" id="authorName" name="authorName" value="{{ book.author or '' }}">
-            </div>
-            <div class="mb-2">
-                <label for="publisher">Издательство</label>
-                <input class="form-control" type="text" id="publisher" name="publisher" value="{{ book.publisher or '' }}">
-            </div>
-            <div class="mb-2">
-                <label for="pagesCount">Количество страниц</label>
-                <input class="form-control" name="pages_count" id="pagesCount" type="number" value="{{ book.pages or '666' }}">
-            </div>
-            <div class="mb-2">
-                <label for="year">Год издания</label>
-                <input class="form-control" type="number" id="year" name="year" value="{{ book.year or '2023' }}">
+            <div class="row">
+                <div class="col-6 mb-2">
+                    <label for="publisher">Издательство</label>
+                    <input class="form-control" type="text" id="publisher" name="publisher" value="{{ current_book.publisher or '' }}">
+                </div>
+                <div class="col-3 mb-2">
+                    <label for="pages">Количество страниц</label>
+                    <input class="form-control" type="number" id="pages" name="pages" value="{{ current_book.pages or '666' }}">
+                </div>
+                <div class="col-3 mb-2">
+                    <label for="year">Год издания</label>
+                    <input class="form-control" type="number" id="year" name="year" value="{{ current_book.year or '2023' }}">
+                </div>
             </div>
             <div class="mb-2">
                 <label for="description">Описание книги</label>
-                <textarea type="text" class="form-control flex-grow-1" name="description" id="description" value="{{ book.description or '' }}"></textarea>
+                <textarea name="description" id="description">{{ current_book.description or '' }}</textarea>
+                <script>const easymde = new EasyMDE({element: document.getElementById('description')});</script>
             </div>
         </div>
     </div>

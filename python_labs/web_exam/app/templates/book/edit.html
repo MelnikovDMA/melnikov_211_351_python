@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
-{% from "book/form.html" import book_form %}
+{% from "book/form.html" import book_form with context %}
 
 {% block content %}
+{% if current_user.role_id == 3 or current_user.role_id == 2 %}
 <div class="container">
     <h1 class="py-3 text-center">Редактирование книги</h1>
-    {{ book_form(url_for('book.edit', book_id=book.id), book, genres, list_of_genres) }}
+    {{ book_form(book, True) }}
 </div>
+{% endif %}
 {% endblock %}

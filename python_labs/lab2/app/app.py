@@ -33,23 +33,23 @@ def form():
 def page_not_found(error):
     return render_template('page_not_found.html'), 404
 
-def transformation_text(kind, nums_phone_number):
+def transformation_text(prenum, nums_phone_number):
     result = ''
-    if kind == '+7':
+    if prenum == '+7':
         result = f'8-{nums_phone_number[1:4]}-{nums_phone_number[4:7]}-{nums_phone_number[7:9]}-{nums_phone_number[9:]}'
-    elif kind == '8':
+    elif prenum == '8':
         result = f'8-{nums_phone_number[1:4]}-{nums_phone_number[4:7]}-{nums_phone_number[7:9]}-{nums_phone_number[9:]}'
-    elif kind == '10':
+    elif prenum == '10':
         result = f'8-{nums_phone_number[0:3]}-{nums_phone_number[3:6]}-{nums_phone_number[6:8]}-{nums_phone_number[8:]}'
     return result
 
 @app.route('/phone_checker', methods = ['GET', 'POST'])
 def phone_checker():
     types_of_error = [
-        'Недопустимый ввод. Неверное количество цифр.', 
-        'Недопустимый ввод. В номере телефона встречаются недопустимые символы.',
+        'Неверное количество цифр.', 
+        'В номере имеются недопустимые символы.',
     ]
-    allows_chars = [' ', '(', ')', '-', '.', '+', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+    arr_simbols = [' ', '(', ')', '-', '.', '+', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
     phone_number = None
     error_msg = None
     isnt_valid = False
@@ -59,7 +59,7 @@ def phone_checker():
         nums_phone_number = ''
         phone_number = request.form.get('phone_number')
         for num in phone_number:
-            if num not in allows_chars:
+            if num not in arr_simbols:
                 error_msg = types_of_error[1]
                 isnt_valid = True
                 break

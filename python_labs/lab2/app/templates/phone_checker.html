@@ -6,11 +6,7 @@
         <div class="mb-3">
             <label for="validationPhoneNumber" class="form-label">Номер телефона</label>
             <div class="input-group has-validation">
-                <input type="text"
-                    class="form-control {% if isnt_valid %}is-invalid{% endif %} {% if not isnt_valid and request.method == 'POST' %}is-valid{% endif %}"
-                    name="phone_number" id="validationPhoneNumber"
-                    aria-describedby="inputGroupPrepend3 validationPhoneNumberFeedback" placeholder="8-ХХХ-ХХХ-ХХ-ХХ"
-                    value="{{ phone_number or '' }}">
+                <input type="text" class="form-control {% if isnt_valid %}is-invalid{% endif %} {% if not isnt_valid and request.method == 'POST' %}is-valid{% endif %}" name="phone_number" id="validationPhoneNumber" aria-describedby="inputGroupPrepend3 validationPhoneNumberFeedback" placeholder="+7-(___)-___-__-__" value="{{ phone_number or '' }}">
                 {% if isnt_valid %}
                 <div id="validationPhoneNumberFeedback" class="invalid-feedback">
                     {{ error_msg }}
@@ -18,7 +14,7 @@
                 {% endif %}
                 {% if not isnt_valid and request.method == 'POST' %}
                 <div class="valid-feedback">
-                    Всё правильно!
+                    Успех
                 </div>
                 {% endif %}
             </div>

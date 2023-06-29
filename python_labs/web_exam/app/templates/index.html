@@ -13,9 +13,9 @@
     {% for current_book in books %}
         <div class="book-card">
             <div class="row">
-                <!-- <div class="book-image col-6"
-                style="background-image: url({{ book.get_img() }});">
-                </div> -->
+                <div class="book-image col-6">
+                <img src="{{ current_book.get_img().url }}" class="img-fluid rounded-start" style="width: 300px;">
+                </div>
                 <div class="book-details col-6">
                     <div class="book-name">
                         {{ current_book.name }}
@@ -27,41 +27,42 @@
                         {{ current_book.year }}
                     </div>
                     <div class="book-rating">
-                       5 <!-- Рейтинг: {{ func.avg(reviews.querry.filter(reviews.book_id == current_book.id).rating.all()) }} -->
+                       Рейтинг: 0
                     </div>
                     <div class="book-publisher">
                         {{ current_book.publisher }}
                     </div>
                     <div class="book-description">
-                        {{ current_book.description }}
+                        {{ current_book.description | safe }}
                     </div>
                     <div class="book-genres">
                         <ul>
-                        {% for genre in book_genre %}
-                            {% if genre.books_id == current_book.id %}
-                            <li>{{ genre.name }}</li>
-                            {% endif %}
-                        {% endfor %}
+                        {% set param = current_book.get_genres() %}
+                        {% if param %}
+                            {% for item in param %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        {% endif %}
                         </ul>
                     </div>
                     <div class="book-reviews">
-                        Количество рецензий: <span>{{ book.reviews|length }}</span>
+                        Количество рецензий: <span>{{ current_book.reviews|length }}</span>
                     </div>
                 </div>
             </div>
             <div class="btn-panel">
                 <div class="details-btn">
-                    <a class="btn btn-primary text-light" href="{{ url_for('book.show', book_id=book.id) }}">Обзор</a>
+                    <a class="btn btn-primary text-light" href="{{ url_for('book.show', book_id=current_book.id) }}">Обзор</a>
                 </div>
-                {% if current_user.is_authenticated and current_user.role_id == 2 %}
+                {% if current_user.is_authenticated and (current_user.role_id == 2 or current_user.role_id == 3) %}
                 <div class="edit-btn">
-                    <a class="btn btn-primary text-light" href="{{ url_for('book.edit', book_id=book.id) }}">Редактировать</a>
+                    <a class="btn btn-primary text-light" href="{{ url_for('book.edit', book_id=current_book.id) }}">Редактировать</a>
                 </div>
-                    {% if current_user.is_authenticated and current_user.role_id == 3 %}
-                    <div class="delete-btn">
-                        <button type="button" class="btn btn-danger" data-url="{{ url_for('book.delete, book_id=book.id') }}" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</button>
-                    </div>
-                    {% endif %}
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.role_id == 3 %}
+                <div class="delete-btn">
+                    <button type="button" class="btn btn-danger" data-url="{{ url_for('book.delete', book_id=current_book.id) }}" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</button>
+                </div>
                 {% endif %}
             </div>
         </div>

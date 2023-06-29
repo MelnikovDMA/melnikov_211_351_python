@@ -15,16 +15,24 @@ class Book(db.Model):
     publisher = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(100), nullable=False)
     pages = db.Column(db.Integer, nullable=False)
-    cover_id = db.Column(db.Integer, db.ForeignKey("covers.id", ondelete='CASCADE'), nullable=False)
+    cover_id = db.Column(db.String(100), db.ForeignKey("covers.id"), nullable=False)
 
     def __repr__(self):
         return '<Book %r>' % self.name
     
     def get_img(self):
-        img = Cover.query.filter_by(id=self.cover_id).first()
-        if img:
-            img = img.url
-        return img
+        img = db.session.execute(db.select(Cover).filter_by(id=self.cover_id)).scalar()
+        return img   
+
+    def get_genres(self):
+        genres_ids = db.session.execute(db.select(BookToGenre).filter_by(book_id=self.id)).all()
+        if genres_ids:
+            genres = []
+            for genre_id in genres_ids:
+                genre = db.session.execute(db.select(Genre).filter_by(id=genre_id[0].id)).scalar()
+                genre = genre.name
+                genres.append(genre)
+            return genres
     
     reviews = db.relationship('Review')
     bookstogenre = db.relationship('BookToGenre')
@@ -33,7 +41,7 @@ class Book(db.Model):
 class Cover(db.Model):
     __tablename__ = 'covers'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(100), primary_key=True)
     file_name = db.Column(db.String(100), nullable=False)
     mime_type = db.Column(db.String(100), nullable=False)
     md5_hash = db.Column(db.String(100), nullable=False, unique=True)

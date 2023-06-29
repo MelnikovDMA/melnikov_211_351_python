@@ -5,8 +5,8 @@
     <h1 class="my-3 text-center text-uppercase font-weight-bold">Просмотр книги</h1>
     <div class="book-card container">
         <div class="row">
-            <div class="book-image col-6 container"
-            style="background-image: url({{ book.get_img() }});">
+            <div class="book-image col-6 container">
+            <img src="{{ current_book.get_img().url }}" class="img-fluid rounded-start" style="width: 300px;">
             </div>
             <div class="book-details col-6">
                 <div class="book-name">
@@ -18,26 +18,30 @@
                 <div class="book-year">
                     {{ current_book.year }}
                 </div>
+                <div class="book-pages">
+                    {{ current_book.pages }}
+                </div>
                 <div class="book-rating">
-                    Рейтинг: {{ func.avg(reviews.querry.filter(reviews.book_id == current_book.id).rating.all()) }}
+                    Рейтинг: 0
                 </div>
                 <div class="book-publisher">
                     {{ current_book.publisher }}
                 </div>
                 <div class="book-description">
-                    {{ current_book.description }}
+                    {{ current_book.description | safe }}
                 </div>
                 <div class="book-genres">
                     <ul>
-                    {% for genre in genres %}
-                        {% if genre.books_id == current_book.id %}
-                        <li>{{ genre.name }}</li>
+                        {% set param = current_book.get_genres() %}
+                        {% if param %}
+                            {% for item in param %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
                         {% endif %}
-                    {% endfor %}
                     </ul>
                 </div>
                 <div class="book-reviews">
-                    Количество рецензий: <span>{{ book.reviews|length }}</span>
+                    Количество рецензий: <span>{{ current_book.reviews|length }}</span>
                 </div>
             </div>
         </div>

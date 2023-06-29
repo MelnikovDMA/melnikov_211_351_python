@@ -3,6 +3,8 @@ from sqlalchemy import MetaData, distinct, desc
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from flask_migrate import Migrate
+import markdown
+
 
 app = Flask(__name__)
 application = app
@@ -28,24 +30,30 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(book_bp)
 
 from models import Book, Genre, BookToGenre, Review, Cover
-from tools import ImageSaver
 
 init_login_manager(app)
 
 @app.route('/')
 def index():
-    books = db.session.execute(db.select(Book)).scalars()
+    books_from_db = db.session.execute(db.select(Book)).scalars()
+    books = []
+    for book in books_from_db:
+        book.description = markdown.markdown(book.description)
+        books.append(book)
     genres = Genre.query.all()
     book_genre = BookToGenre.query.all()
+
     
     return render_template('index.html', books=books, genres=genres, book_genre=book_genre)
 
-@app.route('/media/images/<cover_id>')
-def image(cover_id):
-    cover = Cover.query.get(cover_id)
+@app.route('/media/images/<image_id>')
+def image(image_id):
+    cover = Cover.query.get(image_id)
     if cover is None:
         abort(404)
     return send_from_directory(app.config['UPLOAD_FOLDER'], cover.file_name)
+
+# {{ func.avg(reviews.querry.filter(reviews.book_id == current_book.id).rating.all()) }}
 
 # @app.route('/book/create', methods=['GET', 'POST'])
 # def create():
