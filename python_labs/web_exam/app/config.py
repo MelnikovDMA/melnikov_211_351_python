@@ -7,4 +7,4 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = True
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'media', 'images')
-BOOKS_PER_PAGE = 2
+BOOKS_PER_PAGE = 6
