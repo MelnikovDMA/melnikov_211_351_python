@@ -1,4 +1,5 @@
 from flask import Flask, render_template, abort, send_from_directory, url_for, flash, redirect, request
+from flask_login import current_user
 from sqlalchemy import MetaData, distinct, desc
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
@@ -6,6 +7,7 @@ from flask_migrate import Migrate
 import markdown
 import math
 from config import BOOKS_PER_PAGE
+import datetime
 
 
 app = Flask(__name__)
@@ -31,7 +33,7 @@ from book import bp as book_bp
 app.register_blueprint(auth_bp)
 app.register_blueprint(book_bp)
 
-from models import Book, Genre, BookToGenre, Cover
+from models import Book, Genre, BookToGenre, Cover, Visit, User
 
 init_login_manager(app)
 
@@ -57,7 +59,20 @@ def index():
             avg_rating = sum(rating)/len(rating)
         avg_list.append(avg_rating)
 
-    return render_template('index.html', books=books, genres=genres, book_genre=book_genre, page = page, page_count = page_count, avg_list=avg_list)
+    date_3_months = datetime.datetime.now() - datetime.timedelta(days=90)
+    visits = db.session.execute(db.select(Visit.book_id).filter(Visit.created_at >= date_3_months).order_by(desc(func.count(Visit.book_id))).group_by(Visit.book_id).limit(5)).scalars()
+    popular_books = []
+    for visit in visits:
+        pop_book = db.session.query(Book).filter(Book.id == int(visit)).scalar()
+        popular_books.append(pop_book)
+
+    recent_visits =  db.session.execute(db.select(Visit.book_id).filter(Visit.user_id==current_user.id).order_by(desc(Visit.created_at)).limit(5)).scalars()
+    recent_viewed_books = []
+    for visit in recent_visits:
+        recent_book = db.session.query(Book).filter(Book.id == int(visit)).scalar()
+        recent_viewed_books.append(recent_book)
+
+    return render_template('index.html', books=books, genres=genres, book_genre=book_genre, page = page, page_count = page_count, avg_list=avg_list, popular_books=popular_books, recent_viewed_books=recent_viewed_books)
 
 @app.route('/media/images/<image_id>')
 def image(image_id):
@@ -66,7 +81,7 @@ def image(image_id):
         abort(404)
     return send_from_directory(app.config['UPLOAD_FOLDER'], cover.file_name)
 
-# {{ func.avg(reviews.querry.filter(reviews.book_id == current_book.id).rating.all()) }}
+
 
 # @app.route('/book/create', methods=['GET', 'POST'])
 # def create():

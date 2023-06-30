@@ -123,12 +123,11 @@ class BookToGenre(db.Model):
     book = db.relationship('Book')
     genre = db.relationship('Genre')
 
-# class UserToBook(db.Model):
-#     __tablename__ = 'user_to_book'
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey("genres.id"), nullable=False)
-#     book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
-    
-#     user = db.relationship('User')
-#     book = db.relationship('Book')
-    
+class Visit(db.Model):
+    __tablename__ = 'visits'
+
+    id = db.Column(db.Integer, primary_key=True)
+    book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
+    created_at = created_at = db.Column(db.DateTime, nullable=False, server_default=sa.sql.func.now())
+

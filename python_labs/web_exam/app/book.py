@@ -5,14 +5,28 @@ from auth import check_rights
 import os
 import markdown
 import bleach
+import datetime
 
 bp = Blueprint('book', __name__, url_prefix='/book')
 
-from models import Book, Genre, BookToGenre, Cover, Review
+from models import Book, Genre, BookToGenre, Cover, Review, Visit
 from tools import ImageSaver
 
-@bp.route('/show/<int:book_id>')
+@bp.route('/show/<int:book_id>', methods=['GET', 'POST'])
 def show(book_id):
+    if current_user.is_authenticated:
+        user_id = current_user.id
+        time = datetime.datetime.now()
+        cur_visit = Visit.query.filter_by(user_id=current_user.id, book_id=book_id).first()
+        if cur_visit:
+            cur_visit.created_at = time
+            db.session.add(cur_visit)
+            db.session.commit()
+        else:
+            visit = Visit(book_id=book_id, user_id=user_id, created_at=time)
+            db.session.add(visit)
+            db.session.commit()
+
     current_book = Book.query.get(book_id)
     current_book.description = markdown.markdown(current_book.description)
     book_genre = BookToGenre.query.all()

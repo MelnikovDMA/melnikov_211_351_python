@@ -9,6 +9,132 @@
     Вы не авторизированный пользователь.
 {% endif %}
 
+<h1 class="pt-3 text-warning text-center">Недавно просмотренные книги</h1>
+<div class="container">
+    <div class="book-list row px-3">
+    {% for current_book in recent_viewed_books %}
+        <div class="book-card bg-light rounded col-md-5 m-5 p-2 text-dark">
+            <div class="row">
+                <div class="book-image col-6">
+                <img src="{{ current_book.get_img().url }}" class="img-fluid rounded-start" style="width: 300px;">
+                </div>
+                <div class="book-details col-6">
+                    <div class="book-name">
+                        {{ current_book.name }}
+                    </div>
+                    <div class="book-author">
+                        {{ current_book.author }}
+                    </div>
+                    <div class="book-year">
+                        {{ current_book.year }}
+                    </div>
+                    <div class="book-rating">
+                       Рейтинг: {{ avg_list[current_book.id - 1] }}
+                    </div>
+                    <div class="book-publisher">
+                        {{ current_book.publisher }}
+                    </div>
+                    <div class="book-description">
+                        {{ current_book.description | safe }}
+                    </div>
+                    <div class="book-genres">
+                        <ul>
+                        {% set param = current_book.get_genres() %}
+                        {% if param %}
+                            {% for item in param %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>
+                    </div>
+                    <div class="book-reviews">
+                        Количество рецензий: <span>{{ current_book.reviews|length }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-panel row py-3">
+                <div class="details-btn col-3">
+                    <a class="btn btn-primary text-light" href="{{ url_for('book.show', book_id=current_book.id) }}">Обзор</a>
+                </div>
+                {% if current_user.is_authenticated and (current_user.role_id == 2 or current_user.role_id == 3) %}
+                <div class="edit-btn col-3">
+                    <a class="btn btn-primary text-light" href="{{ url_for('book.edit', book_id=current_book.id) }}">Редактировать</a>
+                </div>
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.role_id == 3 %}
+                <div class="delete-btn col-3">
+                    <button type="button" class="btn btn-danger" data-url="{{ url_for('book.delete', book_id=current_book.id) }}" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
+<h1 class="pt-3 text-warning text-center">Популярные книги</h1>
+<div class="container">
+    <div class="book-list row px-3">
+    {% for current_book in popular_books %}
+        <div class="book-card bg-light rounded col-md-5 m-5 p-2 text-dark">
+            <div class="row">
+                <div class="book-image col-6">
+                <img src="{{ current_book.get_img().url }}" class="img-fluid rounded-start" style="width: 300px;">
+                </div>
+                <div class="book-details col-6">
+                    <div class="book-name">
+                        {{ current_book.name }}
+                    </div>
+                    <div class="book-author">
+                        {{ current_book.author }}
+                    </div>
+                    <div class="book-year">
+                        {{ current_book.year }}
+                    </div>
+                    <div class="book-rating">
+                       Рейтинг: {{ avg_list[current_book.id - 1] }}
+                    </div>
+                    <div class="book-publisher">
+                        {{ current_book.publisher }}
+                    </div>
+                    <div class="book-description">
+                        {{ current_book.description | safe }}
+                    </div>
+                    <div class="book-genres">
+                        <ul>
+                        {% set param = current_book.get_genres() %}
+                        {% if param %}
+                            {% for item in param %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>
+                    </div>
+                    <div class="book-reviews">
+                        Количество рецензий: <span>{{ current_book.reviews|length }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-panel row py-3">
+                <div class="details-btn col-3">
+                    <a class="btn btn-primary text-light" href="{{ url_for('book.show', book_id=current_book.id) }}">Обзор</a>
+                </div>
+                {% if current_user.is_authenticated and (current_user.role_id == 2 or current_user.role_id == 3) %}
+                <div class="edit-btn col-3">
+                    <a class="btn btn-primary text-light" href="{{ url_for('book.edit', book_id=current_book.id) }}">Редактировать</a>
+                </div>
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.role_id == 3 %}
+                <div class="delete-btn col-3">
+                    <button type="button" class="btn btn-danger" data-url="{{ url_for('book.delete', book_id=current_book.id) }}" data-bs-toggle="modal" data-bs-target="#deleteModal">Удалить</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+
 <h1 class="pt-3 text-warning text-center">Список книг</h1>
 <div class="container">
     <div class="book-list row px-3">
