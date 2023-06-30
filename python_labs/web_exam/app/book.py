@@ -4,6 +4,7 @@ from app import db
 from auth import check_rights
 import os
 import markdown
+import bleach
 
 bp = Blueprint('book', __name__, url_prefix='/book')
 
@@ -35,6 +36,7 @@ def show(book_id):
     return render_template('book/show.html', current_book=current_book, book_genre=book_genre, img=img, review=review, reviews=review_arr)
 
 @bp.route('/create', methods=['GET', 'POST'])
+#@check_rights("create")
 def create():
     if request.method == 'GET':
         genres = db.session.execute(db.select(Genre)).scalars()
@@ -42,7 +44,7 @@ def create():
     
     if request.method == 'POST':
         name = request.form.get('bookName')
-        description = request.form.get('description')
+        description = bleach.clean(request.form.get('description'))
         year = request.form.get('year')
         publisher = request.form.get('publisher')
         author = request.form.get('authorName')
@@ -70,6 +72,7 @@ def create():
             return redirect(url_for('book.create'))
         
 @bp.route('/<int:book_id>/edit', methods=['GET', 'POST'])
+#@check_rights("edit")
 def edit(book_id):
     book = db.session.execute(db.select(Book).filter_by(id=book_id)).scalar()
     genres = db.session.execute(db.select(Genre)).scalars()
@@ -82,7 +85,7 @@ def edit(book_id):
     if request.method == 'POST':
         try:
             book.name = request.form.get('bookName')
-            book.description = request.form.get('description')
+            book.description =  bleach.clean(request.form.get('description'))
             book.year = request.form.get('year')
             book.author = request.form.get('authorName')
             book.publisher = request.form.get('publisher')
@@ -104,6 +107,7 @@ def edit(book_id):
             return render_template('book/edit.html', book=book, genres=genres, list_of_genres=list_of_genres)
         
 @bp.route('/<int:book_id>/delete', methods=['POST', 'GET'])
+#@check_rights("delete")
 def delete(book_id):
     if request.method == 'POST':
         book_genres = BookToGenre.query.filter_by(book_id=book_id).all()
@@ -135,7 +139,7 @@ def delete(book_id):
 @bp.route('/<int:book_id>/review', methods=['GET', 'POST'])
 @login_required
 def review(book_id):
-    book = Book.query.get(book_id)
+    current_book = Book.query.get(book_id)
     if request.method == 'POST':
         text = request.form.get('review')
         grade = int(request.form.get('grade'))
@@ -143,6 +147,6 @@ def review(book_id):
         db.session.add(review)
         db.session.commit()
         flash(f'Отзыв был успешно добавлен!', 'success')
-        return redirect(url_for('book.show', book_id=book.id))
+        return redirect(url_for('book.show', book_id=current_book.id))
     if request.method == 'GET':
-        return render_template('book/review.html', book=book)
+        return render_template('book/review.html', current_book=current_book)

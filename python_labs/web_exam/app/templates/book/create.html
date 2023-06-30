@@ -4,8 +4,10 @@
 {% block content %}
 {% if current_user.role_id == 3 %}
 <div class="container">
-    <h1 class="py-3 text-center">Добавление книги</h1>
+    <h1 class="py-3 text-center text-warning">Добавление книги</h1>
     {{ book_form() }}
 </div>
+{% else %}
+    <h3>У вас нет доступа к данной странице</h3>
 {% endif %}
 {% endblock %}

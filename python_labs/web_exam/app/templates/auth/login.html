@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="d-flex h-100 bg-light">
-    <form class="container-fluid m-auto bg-white p-5 border round" method="POST" style="max-width: 30rem;">
+<div class="d-flex h-100 bg-secondary">
+    <form class="container-fluid m-auto bg-white p-5 border rounded" method="POST" style="max-width: 30rem;">
+        <p class="fs-3">Вход</p>
         <div class="form-floating mb-3">
             <input autocomplete="off" type="text" class="form-control" name="login" id="login" placeholder="login" value="{{ request.form.login }}" required>
             <label for="login">Логин</label>

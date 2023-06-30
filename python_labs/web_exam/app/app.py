@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from flask_migrate import Migrate
 import markdown
+import math
+from config import BOOKS_PER_PAGE
 
 
 app = Flask(__name__)
@@ -29,22 +31,33 @@ from book import bp as book_bp
 app.register_blueprint(auth_bp)
 app.register_blueprint(book_bp)
 
-from models import Book, Genre, BookToGenre, Review, Cover
+from models import Book, Genre, BookToGenre, Cover
 
 init_login_manager(app)
 
 @app.route('/')
 def index():
-    books_from_db = db.session.execute(db.select(Book)).scalars()
+    page = request.args.get('page', 1, type=int)
+    books_from_db = db.session.execute(db.select(Book).order_by(desc(Book.year)).limit(app.config['BOOKS_PER_PAGE']).offset(app.config['BOOKS_PER_PAGE'] * (page - 1))).scalars()
     books = []
     for book in books_from_db:
         book.description = markdown.markdown(book.description)
         books.append(book)
+    book_count = Book.query.count()
+    page_count = math.ceil(book_count / app.config['BOOKS_PER_PAGE'])
     genres = Genre.query.all()
     book_genre = BookToGenre.query.all()
-
     
-    return render_template('index.html', books=books, genres=genres, book_genre=book_genre)
+    avg_list = []
+    for cur_book in Book.query.all():
+        reviews_for_book = cur_book.reviews
+        rating = [review.rating for review in reviews_for_book]
+        avg_rating = 0
+        if len(rating) != 0: 
+            avg_rating = sum(rating)/len(rating)
+        avg_list.append(avg_rating)
+
+    return render_template('index.html', books=books, genres=genres, book_genre=book_genre, page = page, page_count = page_count, avg_list=avg_list)
 
 @app.route('/media/images/<image_id>')
 def image(image_id):

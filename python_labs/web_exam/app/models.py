@@ -29,7 +29,7 @@ class Book(db.Model):
         if genres_ids:
             genres = []
             for genre_id in genres_ids:
-                genre = db.session.execute(db.select(Genre).filter_by(id=genre_id[0].id)).scalar()
+                genre = db.session.execute(db.select(Genre).filter_by(id=genre_id[0].genre_id)).scalar()
                 genre = genre.name
                 genres.append(genre)
             return genres
@@ -70,6 +70,9 @@ class Review(db.Model):
 
     def __repr__(self):
         return '<Review %r>' % self.text
+    
+    def get_user(self):
+        return db.session.execute(db.select(User).filter_by(id=self.user_id)).scalar().login
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -119,3 +122,13 @@ class BookToGenre(db.Model):
 
     book = db.relationship('Book')
     genre = db.relationship('Genre')
+
+# class UserToBook(db.Model):
+#     __tablename__ = 'user_to_book'
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey("genres.id"), nullable=False)
+#     book_id = db.Column(db.Integer, db.ForeignKey("books.id"), nullable=False)
+    
+#     user = db.relationship('User')
+#     book = db.relationship('Book')
+    

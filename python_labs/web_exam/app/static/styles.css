@@ -1,0 +1,13 @@
+bg-body {
+    background-color: rgb(30, 30, 30);
+    color: white;
+}
+
+book-card {
+    background-color: rgb(30, 30, 30);
+    color: white;
+}
+
+text-warning {
+    color: red;
+}

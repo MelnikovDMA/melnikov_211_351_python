@@ -1,36 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h1 class="my-3 text-center text-uppercase font-weight-bold">Просмотр книги</h1>
+<div class="container text-warning">
+    <h1 class="my-3 text-center font-weight-bold">Обзор книги</h1>
     <div class="book-card container">
-        <div class="row">
+        <div class="row px-5 mx-5">
             <div class="book-image col-6 container">
             <img src="{{ current_book.get_img().url }}" class="img-fluid rounded-start" style="width: 300px;">
             </div>
             <div class="book-details col-6">
-                <div class="book-name">
-                    {{ current_book.name }}
+                <div class="book-name fs-2">
+                    Название: {{ current_book.name }}
                 </div>
-                <div class="book-author">
-                    {{ current_book.author }}
+                <div class="book-author fs-3">
+                    Автор: {{ current_book.author }}
                 </div>
-                <div class="book-year">
-                    {{ current_book.year }}
+                <div class="book-year fs-4">
+                    Год: {{ current_book.year }}
                 </div>
-                <div class="book-pages">
-                    {{ current_book.pages }}
+                <div class="book-pages fs-4">
+                    Количество страниц: {{ current_book.pages }}
                 </div>
-                <div class="book-rating">
+                <div class="book-rating fs-4">
                     Рейтинг: 0
                 </div>
-                <div class="book-publisher">
-                    {{ current_book.publisher }}
+                <div class="book-publisher fs-4">
+                    Издатель: {{ current_book.publisher }}
                 </div>
-                <div class="book-description">
-                    {{ current_book.description | safe }}
+                <div class="book-description fs-5">
+                    Описание: {{ current_book.description | safe }}
                 </div>
-                <div class="book-genres">
+                <div class="book-genres fs-4">
+                    Жанры:
                     <ul>
                         {% set param = current_book.get_genres() %}
                         {% if param %}
@@ -40,11 +41,31 @@
                         {% endif %}
                     </ul>
                 </div>
-                <div class="book-reviews">
-                    Количество рецензий: <span>{{ current_book.reviews|length }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="m-4 px-5 py-2 text-dark bg-light rounded">
+        <h3 class="pt-4 text-center text-dark">Рецензии</h3>
+        {% if reviews %}
+        {% for review in reviews %}
+        <div class="d-flex flex-column pt-2 ">
+            <div class="d-flex">
+                <div class="flex-grow-1 ms-3">
+                    <h5>{{ review.get_user() }} <span><img class="img-fluid pb-2" style="height: 30px;" src="{{ url_for('static', filename='images/star.png') }}"></span>{{ review.rating }}</h5>
+                    <p><span>{{ review.text | safe }}</span></p>
                 </div>
             </div>
         </div>
+        {% endfor %}
+        {% endif %}
+    
+
+        {% if current_user.is_authenticated and not review %}
+        <div class="review-btn">
+            <a class="btn btn-primary" href="{{ url_for('book.review', book_id=current_book.id) }}">Написать рецензию</a>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
