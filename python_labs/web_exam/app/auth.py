@@ -16,7 +16,7 @@ def check_rights(action):
                 user = load_user(user_id)
             if not current_user.can(action, user):
                 flash("Недостаточно прав для доступа к странице", "warning")
-                return redirect(url_for("users"))
+                return redirect(url_for("index"))
             return func(*args, **kwargs)
         return wrapper
     return decorator

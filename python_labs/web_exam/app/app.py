@@ -66,11 +66,12 @@ def index():
         pop_book = db.session.query(Book).filter(Book.id == int(visit)).scalar()
         popular_books.append(pop_book)
 
-    recent_visits =  db.session.execute(db.select(Visit.book_id).filter(Visit.user_id==current_user.id).order_by(desc(Visit.created_at)).limit(5)).scalars()
     recent_viewed_books = []
-    for visit in recent_visits:
-        recent_book = db.session.query(Book).filter(Book.id == int(visit)).scalar()
-        recent_viewed_books.append(recent_book)
+    if current_user.is_authenticated:
+        recent_visits =  db.session.execute(db.select(Visit.book_id).filter(Visit.user_id==current_user.id).order_by(desc(Visit.created_at)).limit(5)).scalars()
+        for visit in recent_visits:
+            recent_book = db.session.query(Book).filter(Book.id == int(visit)).scalar()
+            recent_viewed_books.append(recent_book)
 
     return render_template('index.html', books=books, genres=genres, book_genre=book_genre, page = page, page_count = page_count, avg_list=avg_list, popular_books=popular_books, recent_viewed_books=recent_viewed_books)
 

@@ -50,7 +50,8 @@ def show(book_id):
     return render_template('book/show.html', current_book=current_book, book_genre=book_genre, img=img, review=review, reviews=review_arr)
 
 @bp.route('/create', methods=['GET', 'POST'])
-#@check_rights("create")
+@login_required
+@check_rights("create")
 def create():
     if request.method == 'GET':
         genres = db.session.execute(db.select(Genre)).scalars()
@@ -86,7 +87,8 @@ def create():
             return redirect(url_for('book.create'))
         
 @bp.route('/<int:book_id>/edit', methods=['GET', 'POST'])
-#@check_rights("edit")
+@login_required
+@check_rights("edit")
 def edit(book_id):
     book = db.session.execute(db.select(Book).filter_by(id=book_id)).scalar()
     genres = db.session.execute(db.select(Genre)).scalars()
@@ -121,7 +123,6 @@ def edit(book_id):
             return render_template('book/edit.html', book=book, genres=genres, list_of_genres=list_of_genres)
         
 @bp.route('/<int:book_id>/delete', methods=['POST', 'GET'])
-#@check_rights("delete")
 def delete(book_id):
     if request.method == 'POST':
         book_genres = BookToGenre.query.filter_by(book_id=book_id).all()

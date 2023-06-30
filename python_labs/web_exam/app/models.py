@@ -2,6 +2,7 @@ import os
 import sqlalchemy as sa
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
+from users_policy import UsersPolicy
 from flask import url_for
 from app import db
 
@@ -90,6 +91,19 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def can(self, action, record=None):
+        users_policy = UsersPolicy(record)
+        method = getattr(users_policy, action, None)
+        if method:
+            return method()
+        return False
+    
+    def is_admin(self):
+        return self.role_id == 3
+    
+    def is_moder(self):
+        return self.role_id == 2
     
     def __repr__(self):
         return '<User %r>' % self.login
